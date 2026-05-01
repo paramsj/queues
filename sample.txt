@@ -1,0 +1,50 @@
+curl -X POST http://localhost:3000/api/v1/auth/register \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "Jai",
+  "email": "jai@example.com",
+  "password": "123456"
+}'
+
+224c806a-407b-4248-96f4-6cf95579e4b6
+
+
+curl -X POST http://localhost:3000/api/v1/auth/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "jai@example.com",
+  "password": "123456"
+}'
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyNGM4MDZhLTQwN2ItNDI0OC05NmY0LTZjZjk1NTc5ZTRiNiIsImVtYWlsIjoiamFpQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Nzc2MTQyNTUsImV4cCI6MTc3NzcwMDY1NX0.EjXgVnZOIReNJgdpA7DNQyZtus0i7nWiNfedN-Y0sx8
+
+curl -X POST http://localhost:3000/api/v1/jobs \
+-H "Content-Type: application/json" \
+-H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyNGM4MDZhLTQwN2ItNDI0OC05NmY0LTZjZjk1NTc5ZTRiNiIsImVtYWlsIjoiamFpQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Nzc2MTQyNTUsImV4cCI6MTc3NzcwMDY1NX0.EjXgVnZOIReNJgdpA7DNQyZtus0i7nWiNfedN-Y0sx8" \
+-d '{
+  "job_type": "EMAIL",
+  "payload": {
+    "to": "test@example.com",
+    "subject": "Hello"
+  },
+  "priority": 1
+}'
+
+curl -X GET http://localhost:3000/api/v1/jobs \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyNGM4MDZhLTQwN2ItNDI0OC05NmY0LTZjZjk1NTc5ZTRiNiIsImVtYWlsIjoiamFpQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Nzc2MTQyNTUsImV4cCI6MTc3NzcwMDY1NX0.EjXgVnZOIReNJgdpA7DNQyZtus0i7nWiNfedN-Y0sx8"
+
+
+curl -X POST http://localhost:3000/api/v1/jobs \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyNGM4MDZhLTQwN2ItNDI0OC05NmY0LTZjZjk1NTc5ZTRiNiIsImVtYWlsIjoiamFpQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Nzc2MTQyNTUsImV4cCI6MTc3NzcwMDY1NX0.EjXgVnZOIReNJgdpA7DNQyZtus0i7nWiNfedN-Y0sx8" \
+-d '{
+  "job_type": "EMAIL",
+  "payload": {
+    "to": "test@example.com",
+    "subject": "Hello"
+  },
+  "priority": 1
+}'
+
+curl -X GET http://localhost:3000/api/v1/jobs \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyNGM4MDZhLTQwN2ItNDI0OC05NmY0LTZjZjk1NTc5ZTRiNiIsImVtYWlsIjoiamFpQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Nzc2MTQyNTUsImV4cCI6MTc3NzcwMDY1NX0.EjXgVnZOIReNJgdpA7DNQyZtus0i7nWiNfedN-Y0sx8"
