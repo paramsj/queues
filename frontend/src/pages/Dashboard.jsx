@@ -35,7 +35,7 @@ export default function Dashboard() {
         } else if (data.data && Array.isArray(data.data)) {
           setJobs(data.data);
         }
-      } catch (err) {}
+      } catch (err) { }
     };
 
     eventSource.onerror = () => {
@@ -48,7 +48,7 @@ export default function Dashboard() {
   }, []);
 
   const getStatusIcon = (status) => {
-    switch(status) {
+    switch (status) {
       case 'COMPLETED': return <CheckCircle2 size={18} />;
       case 'FAILED': return <XCircle size={18} />;
       case 'PROCESSING': return <RefreshCw size={18} className="animate-spin" />;
