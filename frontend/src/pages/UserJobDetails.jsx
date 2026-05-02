@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { api } from '../api';
+import { api, API_URL } from '../api';
 import { ArrowLeft, RefreshCw, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
 import './JobDetails.css'; // Reuse styles
 
@@ -24,17 +24,36 @@ export default function UserJobDetails() {
 
   useEffect(() => {
     fetchJobDetails();
-    
-    // Simple polling for real-time updates while job is processing
-    let intervalId;
-    if (job && !['COMPLETED', 'FAILED', 'CANCELLED'].includes(job.status)) {
-      intervalId = setInterval(fetchJobDetails, 3000);
-    }
-    
-    return () => {
-      if (intervalId) clearInterval(intervalId);
+
+    const token = localStorage.getItem('token');
+    const eventSource = new EventSource(`${API_URL}/jobs/${id}/stream?token=${token}`);
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.data) {
+          setJob(data.data);
+        } else {
+          setJob(data); // Depending on how the backend formats it (controller sends just job object or wrapped in {data: ...})
+        }
+
+        if (data.status === 'COMPLETED' || data.status === 'FAILED' || data.status === 'CANCELLED' || data.data?.status === 'COMPLETED' || data.data?.status === 'FAILED' || data.data?.status === 'CANCELLED') {
+          eventSource.close();
+        }
+      } catch (err) {
+        console.error('Error parsing SSE data', err);
+      }
     };
-  }, [id, job?.status]); // Re-evaluate polling if status changes
+
+    eventSource.onerror = (err) => {
+      console.error('SSE Error:', err);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [id]);
 
   if (loading && !job) {
     return <div className="loading-state glass-panel"><RefreshCw size={32} className="animate-spin text-muted" /><p>Loading job details...</p></div>;

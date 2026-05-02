@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../api';
+import { api, API_URL } from '../api';
 import { Plus, Clock, CheckCircle2, XCircle, AlertCircle, RefreshCw, BarChart2 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -23,6 +23,28 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchJobs();
+
+    const token = localStorage.getItem('token');
+    const eventSource = new EventSource(`${API_URL}/jobs/stream?token=${token}`);
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (Array.isArray(data)) {
+          setJobs(data);
+        } else if (data.data && Array.isArray(data.data)) {
+          setJobs(data.data);
+        }
+      } catch (err) {}
+    };
+
+    eventSource.onerror = () => {
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, []);
 
   const getStatusIcon = (status) => {

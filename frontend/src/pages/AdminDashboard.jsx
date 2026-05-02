@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api } from '../api';
+import { api, API_URL } from '../api';
 import { Shield, RefreshCw, Eye, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import '../pages/Dashboard.css';
@@ -23,6 +23,28 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchAllJobs();
+
+    const token = localStorage.getItem('token');
+    const eventSource = new EventSource(`${API_URL}/admin/jobs/stream?token=${token}`);
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (Array.isArray(data)) {
+          setJobs(data);
+        } else if (data.data && Array.isArray(data.data)) {
+          setJobs(data.data);
+        }
+      } catch (err) {}
+    };
+
+    eventSource.onerror = () => {
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, []);
 
   const getStatusIcon = (status) => {

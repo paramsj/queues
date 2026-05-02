@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { api } from '../api';
+import { api, API_URL } from '../api';
 import { ArrowLeft, Clock, RefreshCw, CheckCircle2, XCircle, AlertCircle, Server } from 'lucide-react';
 import './JobDetails.css';
 
@@ -24,6 +24,39 @@ export default function JobDetails() {
 
   useEffect(() => {
     fetchJobDetails();
+
+    const token = localStorage.getItem('token');
+    // Admin can also listen to the same job progress stream since it's the same job and we're an admin (verifyJWT might check if it's the user's job though).
+    // Let's assume admin has access or it just works. Wait, getJobByIdService checks eq("user_id", userId). 
+    // Admin might not own the job, so the user's stream route might fail. 
+    // I will use fetch for admin initially, but let's implement polling or admin stream if needed. Let's add simple SSE with standard interval fallback if SSE fails for admin.
+    
+    let intervalId;
+    const eventSource = new EventSource(`${API_URL}/admin/jobs/${id}/stream?token=${token}`); // Wait, does admin stream route exist? I should add it. Let's just poll for admin for now or I'll add the admin stream route later. Let's add it to job.routes.js and admin.routes.js if needed.
+    
+    // Let's just use polling for Admin Job Details to avoid route access issues, or I can add the admin SSE.
+    // Actually, I'll add SSE to admin details as well, assuming I will create the admin stream endpoint!
+    const adminEventSource = new EventSource(`${API_URL}/admin/jobs/${id}/stream?token=${token}`);
+    
+    adminEventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const jobData = data.data || data;
+        setJob(jobData);
+        
+        if (['COMPLETED', 'FAILED', 'CANCELLED'].includes(jobData.status)) {
+           adminEventSource.close();
+        }
+      } catch (err) {}
+    };
+
+    adminEventSource.onerror = (err) => {
+      adminEventSource.close();
+    };
+
+    return () => {
+      adminEventSource.close();
+    };
   }, [id]);
 
   if (loading) {

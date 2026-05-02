@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api/v1'; // Assuming backend runs on 8000
+export const API_URL = 'http://localhost:3000/api/v1'; // Assuming backend runs on 3000
 
 const getHeaders = () => {
   const token = localStorage.getItem('token');
@@ -16,8 +16,9 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials)
       });
-      if (!res.ok) throw new Error((await res.json()).message || 'Login failed');
-      return res.json();
+      const data = await res.json().catch(() => ({ message: 'Server error: unexpected response format' }));
+      if (!res.ok) throw new Error(data.message || 'Login failed');
+      return data;
     },
     register: async (userData) => {
       const res = await fetch(`${API_URL}/auth/register`, {
@@ -25,15 +26,17 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
       });
-      if (!res.ok) throw new Error((await res.json()).message || 'Registration failed');
-      return res.json();
+      const data = await res.json().catch(() => ({ message: 'Server error: unexpected response format' }));
+      if (!res.ok) throw new Error(data.message || 'Registration failed');
+      return data;
     }
   },
   jobs: {
     getMyJobs: async () => {
       const res = await fetch(`${API_URL}/jobs/`, { headers: getHeaders() });
-      if (!res.ok) throw new Error('Failed to fetch jobs');
-      return res.json();
+      const data = await res.json().catch(() => ({ message: 'Server error: unexpected response format' }));
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch jobs');
+      return data;
     },
     createJob: async (jobData) => {
       const res = await fetch(`${API_URL}/jobs/`, {
@@ -41,25 +44,29 @@ export const api = {
         headers: getHeaders(),
         body: JSON.stringify(jobData)
       });
-      if (!res.ok) throw new Error('Failed to create job');
-      return res.json();
+      const data = await res.json().catch(() => ({ message: 'Server error: unexpected response format' }));
+      if (!res.ok) throw new Error(data.message || 'Failed to create job');
+      return data;
     },
     getJobById: async (id) => {
       const res = await fetch(`${API_URL}/jobs/${id}`, { headers: getHeaders() });
-      if (!res.ok) throw new Error('Failed to fetch job details');
-      return res.json();
+      const data = await res.json().catch(() => ({ message: 'Server error: unexpected response format' }));
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch job details');
+      return data;
     }
   },
   admin: {
     getAllJobs: async () => {
       const res = await fetch(`${API_URL}/admin/jobs`, { headers: getHeaders() });
-      if (!res.ok) throw new Error('Failed to fetch all jobs');
-      return res.json();
+      const data = await res.json().catch(() => ({ message: 'Server error: unexpected response format' }));
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch all jobs');
+      return data;
     },
     getJobById: async (id) => {
       const res = await fetch(`${API_URL}/admin/jobs/${id}`, { headers: getHeaders() });
-      if (!res.ok) throw new Error('Failed to fetch job details');
-      return res.json();
+      const data = await res.json().catch(() => ({ message: 'Server error: unexpected response format' }));
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch job details');
+      return data;
     }
   }
 };

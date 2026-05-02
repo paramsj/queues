@@ -21,4 +21,16 @@ app.use("/api/v1/admin", adminRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/jobs', jobRouter);
 
+// Error handler
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+
+    return res.status(statusCode).json({
+        success: false,
+        message,
+        errors: err.errors || [],
+    });
+});
+
 export { app };
